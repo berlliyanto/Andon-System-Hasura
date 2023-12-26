@@ -2,15 +2,19 @@
 #include <EthernetENC.h>
 #include <MFRC522.h>
 #include <ArduinoJson.h>
+#include <HardwareSerial.h>
+
+HardwareSerial SerialSlave1(1);
+HardwareSerial SerialSlave2(2);
 
 //------------Defined PIN----------------//
 
-#define RXs1 3
-#define TXs1 1
-#define RXs2 16
-#define TXs2 17
-#define SS_PIN  4
-#define RST_PIN 22  
+#define RXs1 16
+#define TXs1 17
+#define RXs2 26
+#define TXs2 25
+#define SS_PIN 4
+#define RST_PIN 22
 
 //------------Defined PIN END----------------//
 
@@ -23,11 +27,22 @@ bool isClientConnected = false;
 String host = "89.116.231.224";
 int portERP = 800;
 
+bool printSerial1State = true;
+bool printSerial2State = true;
+bool readyToTap = true;
 bool printWebData = true;
+
+const char* stateFromSlave1 = "standby";
+const char* typeFromSlave1 = "none";
+
 unsigned long previousApiMillis = 0;
-const long intervalApi = 10000;
+const long intervalApi = 2000;
 unsigned long previousRfidMillis = 0;
-const long intervalRfid = 900;
+const long intervalRfid = 10;
+unsigned long previousSerial1Millis = 0;
+const long intervalSerial1 = 15;
+unsigned long previousSerial2Millis = 0;
+const long intervalSerial2 = 20;
 
 //------------Variable Declaration END----------------//
 
@@ -36,40 +51,50 @@ const long intervalRfid = 900;
 
 EthernetClient client;
 MFRC522 rfid(SS_PIN, RST_PIN);
-DynamicJsonDocument docSlave2(1024);
+StaticJsonDocument<200> docSlave1;
+StaticJsonDocument<200> docSlave2;
 
 //------------Instance Object END--------------//
 
 void setup() {
   SPI.begin();
-  rfid.PCD_Init(); 
-  Serial.begin(115200);
-  Serial2.begin(9600, SERIAL_8N1, RXs2, TXs2);
+  rfid.PCD_Init();
+  Ethernet.init(5);
 
+  Serial.begin(115200);
   delay(1000);
   Serial.println("Begin Ethernet");
-  Ethernet.init(5);
-  ethernetBegin(mac); //ethernet_config.ino
+  ethernetBegin(mac);  //ethernet_config.ino
+
+  SerialSlave1.begin(9600, SERIAL_8N1, RXs1, TXs1);  //SLAVE 1
+  SerialSlave2.begin(9600, SERIAL_8N1, RXs2, TXs2);  //SLAVE 2
 
   connectClient(serverERP, portERP);
 }
 
 void loop() {
-  unsigned long apiMillis = millis();
-  unsigned long rfidMillis = millis();
-  receiveResponse(); //api_call.ino
-  
-  if(rfidMillis - previousRfidMillis >= intervalRfid){
+  unsigned long millisTime = millis();
+
+  if (millisTime - previousRfidMillis >= intervalRfid) {
     readRFID();
-    mainConSerial2();
-    previousRfidMillis = rfidMillis;
+    previousRfidMillis = millisTime;
   }
 
-  if (apiMillis - previousApiMillis >= intervalApi) {
-    if (isClientConnected) {
-      Serial.println("Test Api Jalan");
-      getAPI("/api/timeserver", host); //api_call.ino
-    }
-    previousApiMillis = apiMillis;
+  if (millisTime - previousSerial1Millis >= intervalSerial1) {
+    mainConSerial1();
+    previousSerial1Millis = millisTime;
   }
+
+  if (millisTime - previousSerial2Millis >= intervalSerial2) {
+    mainConSerial2();
+    previousSerial2Millis = millisTime;
+  }
+
+  // if (millisTime - previousApiMillis >= intervalApi) {
+  //   if (isClientConnected) {
+  //     getAPI("/api/timeserver", host);  //api_call.ino
+  //   }
+  //   receiveResponse();  //api_call.ino
+  //   previousApiMillis = millisTime;
+  // }
 }

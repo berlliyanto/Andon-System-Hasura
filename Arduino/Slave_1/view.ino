@@ -1,105 +1,91 @@
-//----------------------------------------------HOME
-void showHomeScreen(const char* title) {
+void HomeView(char* title) {
   tft.fillScreen(BLACK);
 
-  //title
-  int titleX = (tft.width() - strlen(title) * 18) / 2;
-  int titleY = 20;
-  tft.setTextSize(3);
-  tft.setTextColor(YELLOW);
+  Text(130, 30, 3, GREEN, title);
+  Text(30, 65, 4, YELLOW, "===========");
 
-  tft.setCursor(titleX, titleY);
-  tft.println(title);
+  callBtn.initButton(&tft, 160, 180, 280, 70, WHITE, RED, BLACK, "CALL", 3);
+  scanBtn.initButton(&tft, 160, 270, 280, 70, WHITE, GREEN, BLACK, "SCAN", 3);
+  endBtn.initButton(&tft, 160, 360, 280, 70, WHITE, BLUE, BLACK, "END", 3);
 
-  //line
-  char* line = "============";
-  int lineX = (tft.width() - strlen(line) * 18) / 2;
-  int lineY = 50;
-  tft.setCursor(lineX, lineY);
-  tft.println(line);
+  callBtn.drawButton(false);
+  scanBtn.drawButton(false);
+  endBtn.drawButton(false);
 
-  //buttons
-  BTN_START_Y = (tft.height() - (BTN_HOME_HEIGHT * BTN_HOME_QTY + BTN_HOME_MARGIN * BTN_HOME_QTY));
-  int buttonY = BTN_START_Y;
-  for (int i = 0; i < BTN_HOME_QTY; i++ ) {
-    drawButton(BTN_START_X, buttonY, BTN_WIDTH, BTN_HOME_HEIGHT, pgm_read_dword_near(BTN_HOME_COLOR + i), pgm_read_dword_near(BTN_HOME_LABEL + i), BLACK);
-    buttonY += BTN_HOME_HEIGHT + BTN_HOME_MARGIN;
-  }
-  ACTIVE_SCREEN = "HOME";
+  CURRENT_VIEW = "HOME";
 }
 
-//----------------------------------------------RFID
-void showRfidScreen() {
+void CallView(char* title) {
   tft.fillScreen(BLACK);
 
-  makeHeader("TAP");
+  Header(title);
 
-  tft.setTextColor(YELLOW);
-  tft.setTextSize(4);
-  const int textHeight = 36;
-  int descriptionX = (tft.width() - 8 * 24) / 2;  // 8 is length of string
-  int descriptionY = (tft.height() - 3 * textHeight) / 2;
-  tft.setCursor(descriptionX, descriptionY);
-  tft.println(F("SILAHKAN"));
-
-  descriptionX = (tft.width() - 8 * 24) / 2;  // 8 is length of string
-  descriptionY = descriptionY + textHeight;
-  tft.setCursor(descriptionX, descriptionY);
-  tft.println(F("TAP RFID"));
-
-  descriptionX = (tft.width() - 4 * 24) / 2;  // 4 is length of string
-  descriptionY = descriptionY + textHeight;
-  tft.setCursor(descriptionX, descriptionY);
-  tft.println(F("ANDA"));
-
-  ACTIVE_SCREEN = "RFID";
+  ButtonList(130, 200, 270, 340, 410, 60);
+  CURRENT_VIEW = "CALL";
 }
 
-//----------------------------------------------CALL
-void showCallScreen() {
+void ScanView(char* title) {
   tft.fillScreen(BLACK);
 
-  if (IS_SERVE) {
-    makeHeader("SERVE");
-  } else {
-    makeHeader("CALL");
-  }
+  Header(title);
 
-  BTN_START_Y = (tft.height() - (BTN_CALL_HEIGHT * BTN_CALL_QTY + BTN_CALL_MARGIN * (BTN_CALL_QTY - 1))) / 2 + 25;
-  int buttonY = BTN_START_Y;
-  for (int i = 0; i < BTN_CALL_QTY; i++ ) {
-    drawButton(BTN_START_X, buttonY, BTN_WIDTH, BTN_CALL_HEIGHT, pgm_read_dword_near(BTN_CALL_COLOR + i), pgm_read_dword_near(BTN_CALL_LABEL + i), BLACK);
-    buttonY += BTN_CALL_HEIGHT + BTN_CALL_MARGIN;
-  }
-  ACTIVE_SCREEN = "CALL";
+  CHScanBtn.initButton(&tft, 160, 180, 280, 70, WHITE, RED, BLACK, "CHANGE", 3);
+  AddScanBtn.initButton(&tft, 160, 270, 280, 70, WHITE, CYAN, BLACK, "ADD MP", 3);
+  SerScanBtn.initButton(&tft, 160, 360, 280, 70, WHITE, YELLOW, BLACK, "SERVE", 3);
+
+  CHScanBtn.drawButton(false);
+  AddScanBtn.drawButton(false);
+  SerScanBtn.drawButton(false);
+
+  CURRENT_VIEW = "SCAN";
 }
 
-//----------------------------------------------CHANGE
-void showScanScreen() {
+void ChangeView(char* title) {
   tft.fillScreen(BLACK);
 
-  makeHeader("SCAN");
+  Header(title);
 
-  BTN_START_Y = (tft.height() - (BTN_SCAN_HEIGHT * BTN_SCAN_QTY + BTN_SCAN_MARGIN * BTN_SCAN_QTY)) / 2 + 25;
-  int buttonY = BTN_START_Y;
-  for (int i = 0; i < BTN_SCAN_QTY; i++ ) {
-    drawButton(BTN_START_X, buttonY, BTN_WIDTH, BTN_SCAN_HEIGHT, pgm_read_dword_near(BTN_SCAN_COLOR + i), pgm_read_dword_near(BTN_SCAN_LABEL + i), BLACK);
-    buttonY += BTN_SCAN_HEIGHT + BTN_SCAN_MARGIN;
-  }
-  ACTIVE_SCREEN = "SCAN";
+  RunChangeBtn.initButton(&tft, 160, 130, 280, 50, WHITE, GREEN, BLACK, "RUNNING", 3);
+  RunChangeBtn.drawButton(false);
+  ButtonList(190, 250, 310, 370, 430, 50);
+
+  CURRENT_VIEW = "CHANGE";
 }
 
-void showChangeScreen() {
+void ServeView(char* title) {
   tft.fillScreen(BLACK);
 
-  makeHeader("CHANGE");
+  Header(title);
+  ButtonList(130, 200, 270, 340, 410, 60);
 
-  BTN_START_Y = (tft.height() - (BTN_CHANGE_HEIGHT * BTN_CHANGE_QTY + BTN_CHANGE_MARGIN * (BTN_CHANGE_QTY - 1))) / 2 + 25;
-  int buttonY = BTN_START_Y;
-  for (int i = 0; i < BTN_CHANGE_QTY; i++ ) {
-    drawButton(BTN_START_X, buttonY, BTN_WIDTH, BTN_CHANGE_HEIGHT, pgm_read_dword_near(BTN_CHANGE_COLOR + i), pgm_read_dword_near(BTN_CHANGE_LABEL + i), BLACK);
-    buttonY += BTN_CHANGE_HEIGHT + BTN_CHANGE_MARGIN;
+  CURRENT_VIEW = "SERVE";
+}
+
+void RFIDView(char* title) {
+  tft.fillScreen(BLACK);
+
+  Header(title);
+
+  Text(60, 120, 4, YELLOW, "SILAHKAN");
+  Text(60, 170, 4, YELLOW, "TAP RFID");
+  Text(110, 220, 4, YELLOW, "ANDA");
+
+  int xStatus = 0;
+  if (RFID_STATUS == "MAINTENANCE") {
+    xStatus = 65;
+  } else if (RFID_STATUS == "MOLD") {
+    xStatus = 120;
+  } else if (RFID_STATUS == "TEKNISI") {
+    xStatus = 95;
+  } else if (RFID_STATUS == "MATERIAL") {
+    xStatus = 90;
+  } else if (RFID_STATUS == "QUALITY" || RFID_STATUS == "RUNNING") {
+    xStatus = 100;
+  } else if (RFID_STATUS == "MP") {
+    xStatus = 140;
   }
 
-  ACTIVE_SCREEN = "CHANGE";
+  Text(xStatus, 270, 3, GREEN, RFID_STATUS);
+
+  CURRENT_VIEW = "RFID";
 }

@@ -19,11 +19,11 @@ void postAPI(String url, String host, String body){
 bool connectClient(byte server[], int port) {
   if (client.connect(server, port)) {
     isClientConnected = true;
-    Serial.println("Connected!");
+    Serial.println("Connected to Server");
     delay(1000);
     return true;
   } else {
-    Serial.println("connection failed");
+    Serial.println("Connection Failed to Server");
     return false;
   }
 }
