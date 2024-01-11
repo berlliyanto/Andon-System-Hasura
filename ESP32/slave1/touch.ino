@@ -6,7 +6,6 @@ bool getTouch(void) {
   digitalWrite(XM, HIGH);
   bool pressed = (p.z > MINPRESSURE && p.z < MAXPRESSURE);
   if (pressed) {
-    Serial
     pX = map(p.x, TS_LEFT, TS_RT, 0, tft.width());
     pY = map(p.y, TS_TOP, TS_BOT, 0, tft.height());
   }

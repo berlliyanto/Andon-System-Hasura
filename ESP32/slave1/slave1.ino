@@ -73,13 +73,13 @@ const int TS_LEFT = 907, TS_RT = 136, TS_TOP = 942, TS_BOT = 139;
 unsigned long loadingMillis = 0;
 unsigned long loadingIntervalMillis = 50;
 
-const int QRcode_Version = 16;  // set the version (range 1->40)
+const int QRcode_Version = 14;  // set the version (range 1->40)
 const int QRcode_ECC = 0;       // set the Error Correction level (range 0-3) or symbolic (ECC_LOW, ECC_MEDIUM, ECC_QUARTILE and ECC_HIGH)
 // --------------Declare Variable END ----------------//
 
 void setup() {
   Serial.begin(115200);
-  SerialMaster.begin(9600, SERIAL_8N1, RXm, TXm);
+  SerialMaster.begin(115200, SERIAL_8N1, RXm, TXm);
   delay(1000);
   pinMode(shotCountPin, INPUT_PULLUP);
   uint16_t ID = tft.readID();

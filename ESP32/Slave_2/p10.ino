@@ -55,7 +55,7 @@ void displayCalling(const char* type) {
   for (int i = 0; i < slideX; i++) {
     dmd.drawString(startX1 - i, -2, calling, strlen(calling), GRAPHICS_NORMAL);
     dmd.drawString(startX2 - i, 7, newtype, strlen(newtype), GRAPHICS_NORMAL);
-    delay(100);
+    delay(50);
     dmd.clearScreen(true);
   }
   delay(1000);
@@ -63,9 +63,10 @@ void displayCalling(const char* type) {
 
 void displayStandby() {
   dmd.clearScreen(true);
+  delay(1000);
   for (int i = 0; i < 90; i++) {
     dmd.drawString(40 - i, -2, "STANDBY", 7, GRAPHICS_NORMAL);
-    delay(100);
+    delay(50);
     dmd.clearScreen(true);
   }
   delay(1000);
@@ -93,7 +94,7 @@ void displayChange(const char* type) {
   dmd.clearScreen(true);
   for (int i = 0; i <= slideX; i++) {
     dmd.drawString(startX1 - i, 2, type, strlen(type), GRAPHICS_NORMAL);
-    delay(100);
+    delay(50);
     dmd.clearScreen(true);
   }
   delay(1000);
