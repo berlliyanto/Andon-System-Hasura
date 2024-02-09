@@ -21,3 +21,4 @@
 
 ### Arsitektur Sistem
 
+![system](/images/system_architecture.PNG)
