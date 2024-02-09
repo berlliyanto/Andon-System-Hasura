@@ -8,13 +8,21 @@ void Text(int x, int y, int size, uint16_t color, const char* msg) {
 void Header(char* title) {
   uint16_t textColor = WHITE;
   uint16_t BgColor = BLACK;
-  if(title == "QR"){
+  if (title == "QR") {
     textColor = BLACK;
     BgColor = WHITE;
   }
+
   backBtn.initButton(&tft, 60, 41, 70, 40, BgColor, BgColor, textColor, "<BACK", 3);
   backBtn.drawButton(false);
-  Text(210, 30, 3, GREEN, title);
+
+  if (CURRENT_VIEW == "NG") {
+      submitBtn.initButton(&tft, 250, 41, 70, 40, BLACK, BLACK, BLUE, "SUBMIT", 3);
+      submitBtn.drawButton(false);
+
+  } else {
+    Text(210, 30, 3, GREEN, title);
+  }
   Text(30, 65, 4, YELLOW, "~~~~~~~~~~~");
 }
 
@@ -44,5 +52,13 @@ void LoadingCircle() {
   if (isLoading) {
     Text(80, 280, 3, WHITE, "Loading...");
     tft.fillCircle(150, 230, 30, MAGENTA);
+  }
+}
+
+void indicator() {
+  if (connectionStatus) {
+    tft.drawCircle(300, 20, 10, GREEN);
+  } else {
+    tft.drawCircle(300, 20, 10, RED);
   }
 }

@@ -1,3 +1,4 @@
+//INIT ETHERNET
 void ethernetBegin(byte mac[]) {
 
   if (Ethernet.begin(mac)) {
@@ -16,7 +17,6 @@ void ethernetBegin(byte mac[]) {
     }
   }
   delay(5000);
-
 
   Serial.print("Local IP : ");
   Serial.println(Ethernet.localIP());

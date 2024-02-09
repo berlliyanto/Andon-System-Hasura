@@ -1,101 +1,93 @@
-void displayRunning(int count, const char* hopper) {
-  char buffer[10];
-  sprintf(buffer, "%d", count);
-  const char* counter = buffer;
-  const char* hop = "H:";
-  const char* countText = "S:";
-  int hopLength = strlen(hop) + strlen(hopper) + 1;
-  int countLength = strlen(counter) + strlen(countText) + 1;
-  char newHopper[hopLength];
-  char newCounter[countLength];
+void displayP10() {
+  const char* wcCode = "";
 
-  strcpy(newCounter, countText);
-  strcat(newCounter, counter);
+  int firstLineLength = strlen(wcCode) + strlen(firstLine);
+  int firstLineWidth = firstLineLength * 12;
+  char newFirstLine[firstLineLength];
+  strcpy(newFirstLine, firstLine);
+  strcat(newFirstLine, wcCode);
 
-  strcpy(newHopper, hop);
-  strcat(newHopper, hopper);
+  int secondLineLength = 0;
+  int secondLineWidth = 0;
 
-  dmd.clearScreen(true);
-  dmd.drawString(0, -2, newHopper, hopLength, GRAPHICS_NORMAL);
-  dmd.drawString(0, 7, newCounter, countLength, GRAPHICS_NORMAL);
-  delay(1000);
+  if(listCall.size() > 0){
+    String concat = concatenatedListCall();
+    secondLineLength = concat.length();
+    secondLineWidth = secondLineLength * 9;
+    if(secondLineLength <= 13){
+      secondLineWidth = secondLineLength * 10 + 15;
+    }
+  }
+
+  static unsigned long lastTime = 0;
+  unsigned long currentTime = millis();
+
+  if (currentTime - lastTime >= 30) {
+    dma_display->fillScreen(0);
+
+    if (lastFirstLineXPos < firstLineWidth) {
+      displayFirstRow(newFirstLine);
+      lastFirstLineXPos++;
+    } else {
+      lastFirstLineXPos = 0;
+    }
+
+    if (lastSecondLineXPos < secondLineWidth) {
+      displaySecondRow();
+      lastSecondLineXPos++;
+    } else {
+      lastSecondLineXPos = 0;
+    }
+
+    lastTime = currentTime;
+  }
 }
 
-void displayCalling(const char* type) {
-  const char* calling = "CALLING";
-  const char* newtype = type;
-  int slideX = 0;
-  int startX1 = 0;
-  int startX2 = 0;
-
-  if (strcmp(newtype, "MAINTENANCE") == 0) {
-    slideX = 120;
-    startX1 = 55;
-    startX2 = 40;
-  } else if (strcmp(newtype, "MOLD") == 0) {
-    slideX = 80;
-    startX1 = 27;
-    startX2 = 35;
-  } else if (strcmp(newtype, "TEKNISI") == 0) {
-    slideX = 80;
-    startX1 = 35;
-    startX2 = 35;
-  } else if (strcmp(newtype, "MATERIAL") == 0) {
-    slideX = 85;
-    startX1 = 40;
-    startX2 = 35;
-  } else if (strcmp(newtype, "QUALITY") == 0) {
-    slideX = 85;
-    startX1 = 37;
-    startX2 = 35;
+void displayFirstRow(char* firstLine) {
+  if (strstr(firstLine, "RUNNING")) {
+    dma_display->setTextColor(myGREEN);
+  } else if (strstr(firstLine, "MAINTENANCE")) {
+    dma_display->setTextColor(myRED);
+  } else if (strstr(firstLine, "QDC")) {
+    dma_display->setTextColor(myCYAN);
+  } else if (strstr(firstLine, "SETTING")) {
+    dma_display->setTextColor(myYELLOW);
+  } else if (strstr(firstLine, "DRYING")) {
+    dma_display->setTextColor(myPURPLE);
+  } else if (strstr(firstLine, "TRIAL")) {
+    dma_display->setTextColor(myBLUE);
+  } else if (strstr(firstLine, "STANDBY")) {
+    dma_display->setTextColor(myBROWN);
+  } else {
+    dma_display->setTextColor(myWHITE);
   }
-
-
-  dmd.clearScreen(true);
-  for (int i = 0; i < slideX; i++) {
-    dmd.drawString(startX1 - i, -2, calling, strlen(calling), GRAPHICS_NORMAL);
-    dmd.drawString(startX2 - i, 7, newtype, strlen(newtype), GRAPHICS_NORMAL);
-    delay(50);
-    dmd.clearScreen(true);
-  }
-  delay(1000);
+  dma_display->setCursor(32 - lastFirstLineXPos, 7);
+  dma_display->print(firstLine);
 }
 
-void displayStandby() {
-  dmd.clearScreen(true);
-  delay(1000);
-  for (int i = 0; i < 90; i++) {
-    dmd.drawString(40 - i, -2, "STANDBY", 7, GRAPHICS_NORMAL);
-    delay(50);
-    dmd.clearScreen(true);
+void displaySecondRow() {
+  
+  if (listCall.size() > 0) {
+    dma_display->setCursor(32 - lastSecondLineXPos, 16);
+    for (int i = 0; i < listCall.size(); i++) {
+      if (listCall[i] == "MAINTENANCE") {
+        dma_display->setTextColor(myRED);
+        dma_display->print("MAINTENANCE ");
+      } else if (listCall[i] == "MOLD") {
+        dma_display->setTextColor(myCYAN);
+        dma_display->print("MOLD ");
+      } else if (listCall[i] == "TEKNISI") {
+        dma_display->setTextColor(myYELLOW);
+        dma_display->print("TEKNISI ");
+      } else if (listCall[i] == "MATERIAL") {
+        dma_display->setTextColor(myPURPLE);
+        dma_display->print("MATERIAL ");
+      } else if (listCall[i] == "QUALITY") {
+        dma_display->setTextColor(myBLUE);
+        dma_display->print("QUALITY ");
+      } else {
+        dma_display->setTextColor(myWHITE);
+      }
+    }
   }
-  delay(1000);
-}
-
-void displayChange(const char* type) {
-  int slideX = 0;
-  int startX1 = 0;
-  if (strcmp(type, "MAINTENANCE") == 0) {
-    slideX = 120;
-    startX1 = 40;
-  } else if (strcmp(type, "MOLD") == 0) {
-    slideX = 80;
-    startX1 = 35;
-  } else if (strcmp(type, "TEKNISI") == 0) {
-    slideX = 80;
-    startX1 = 35;
-  } else if (strcmp(type, "MATERIAL") == 0) {
-    slideX = 85;
-    startX1 = 35;
-  } else if (strcmp(type, "QUALITY") == 0) {
-    slideX = 85;
-    startX1 = 35;
-  }
-  dmd.clearScreen(true);
-  for (int i = 0; i <= slideX; i++) {
-    dmd.drawString(startX1 - i, 2, type, strlen(type), GRAPHICS_NORMAL);
-    delay(50);
-    dmd.clearScreen(true);
-  }
-  delay(1000);
 }

@@ -15,6 +15,10 @@ void routes() {
       RFIDView("TAP");
     } else if(CURRENT_VIEW == "QR") {
       QrView("QR");
+    } else if(CURRENT_VIEW == "NG") {
+      NGView("NG");
+    } else if(CURRENT_VIEW == "PARTS") {
+      SelectPartView("PARTS");
     }
 
     isChangedView = false;

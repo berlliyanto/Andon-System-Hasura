@@ -2,11 +2,13 @@ void hopperStatus(int hopper) {
   Serial.println(hopper);
 }
 
+// SEND JSON TO SLAVE 2
 void writeToSerial2(String json) {
   SerialSlave2.write(json.c_str());
   SerialSlave1.println();
 }
 
+//FUNCTION TO PROCESS DATA FROM SLAVE 2
 void dataFromSlave2(String json) {
   deserializeJson(docSlave2, json);
   stateFromSlave2 = docSlave2["state"];
@@ -17,6 +19,7 @@ void dataFromSlave2(String json) {
   }
 }
 
+// MAIN SERIAL COMMUNICATION MASTER - SLAVE 2
 void mainConSerial2() {
   if (SerialSlave2.available() > 0) {
     if (printSerial2State) {

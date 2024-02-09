@@ -1,8 +1,10 @@
+// SEND JSON TO SLAVE 1
 void writeToSerial1(String json) {
   SerialSlave1.write(json.c_str());
   SerialSlave1.println();
 }
 
+// SEND LOADING STATE TO SLAVE 1
 void sendLoadingState(String type) {
   docSlave1Loading["state"] = "loading";
   docSlave1Loading["type"] = type;
@@ -13,6 +15,7 @@ void sendLoadingState(String type) {
   SerialSlave1.println();
 }
 
+// FUNCTION FOR CALL OPERATION FROM SLAVE 1
 void callOperation() {
   if (strcmp(typeFromSlave1, "MAINTENANCE") == 0) {
     postAPI("/api/workcentercall", hostDev, makeBody("call", "maintenance"));
@@ -32,16 +35,18 @@ void callOperation() {
   }
 }
 
+// FUNCTION TO PROCESS DATA FROM SLAVE 1
 void dataFromSlave1(String json) {
   deserializeJson(docSlave1, json);
   stateFromSlave1 = docSlave1["state"];
 
-  if (strcmp(stateFromSlave1, "change") == 0 || strcmp(stateFromSlave1, "serve") == 0) {
+  if (strcmp(stateFromSlave1, "change") == 0) {
+    typeFromSlave1 = docSlave1["type"];
+
+  } else if (strcmp(stateFromSlave1, "serve") == 0) {
     typeFromSlave1 = docSlave1["type"];
   } else if (strcmp(stateFromSlave1, "call") == 0) {
     typeFromSlave1 = docSlave1["type"];
-    sendLoadingState("isLoading");
-    delay(1000);
     callOperation();
   } else if (strcmp(stateFromSlave1, "standby") == 0) {
     sendLoadingState("isLoading");
@@ -51,9 +56,24 @@ void dataFromSlave1(String json) {
   } else if (strcmp(stateFromSlave1, "shot") == 0) {
     postAPI("/api/workcenterstatus/addshot", hostDev, makeBody("shot", ""));
     Serial.println("shot");
+  } else if (strcmp(stateFromSlave1, "ng") == 0) {
+    String ng = "";
+    serializeJson(docSlave1["type"], ng);
+    const char* itemId = docSlave1["item_id"];
+
+    postAPI("/api/workcenterstatus/addng", hostDev, makeBody("ng", ng, "", String(itemId)));
+  } else if (strcmp(stateFromSlave1, "qr") == 0) {
+    typeFromSlave1 = docSlave1["type"];
+    if (strcmp(typeFromSlave1, "MOLD") == 0 || strcmp(typeFromSlave1, "TEKNISI") == 0 || strcmp(typeFromSlave1, "MATERIAL") == 0 || strcmp(typeFromSlave1, "QUALITY") == 0) {
+      Serial.println("dari qr");
+      getAPI("/api/iotreport/andonmonitoring?is_andon=1&wc=" + wcCode, hostDev);
+    } else {
+      isListenStatus = false;
+    }
   }
 }
 
+// MAIN SERIAL COMMUNICATION MASTER - SLAVE 1
 void mainConSerial1() {
   if (SerialSlave1.available() > 0) {
     if (printSerial1State) {
@@ -62,6 +82,7 @@ void mainConSerial1() {
     }
     String jsonString = SerialSlave1.readStringUntil('\n');
     holdingJson = jsonString;
+    Serial.print("Holding Json : ");
     Serial.println(holdingJson);
     dataFromSlave1(jsonString);
   }

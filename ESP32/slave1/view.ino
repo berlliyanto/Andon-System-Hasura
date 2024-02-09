@@ -4,6 +4,12 @@ void HomeView(char* title) {
   Text(130, 30, 3, GREEN, title);
   Text(30, 65, 4, YELLOW, "===========");
 
+  if (strcmp(HOME_STATUS, "RUNNING") == 0) {
+    NgBtn.initButton(&tft, 270, 41, 70, 40, BLACK, BLACK, RED, "NG>", 3);
+    NgBtn.drawButton(false);
+  }
+
+
   int x = 0;
   if (strcmp(HOME_STATUS, "MAINTENANCE") == 0) x = 70;
   else if (strcmp(HOME_STATUS, "QDC") == 0) x = 130;
@@ -14,14 +20,15 @@ void HomeView(char* title) {
   else if (strcmp(HOME_STATUS, "RUNNING") == 0) x = 100;
 
   Text(x, 115, 3, GREEN, HOME_STATUS);
+  Text(50, 150, 3, WHITE, workOrderNo);
 
-  callBtn.initButton(&tft, 160, 200, 280, 70, WHITE, RED, BLACK, "CALL", 3);
-  scanBtn.initButton(&tft, 160, 290, 280, 70, WHITE, GREEN, BLACK, "SCAN", 3);
+  callBtn.initButton(&tft, 160, 230, 280, 70, WHITE, RED, BLACK, "CALL", 3);
+  scanBtn.initButton(&tft, 160, 320, 280, 70, WHITE, GREEN, BLACK, "SCAN", 3);
 
   callBtn.drawButton(false);
   scanBtn.drawButton(false);
   if (strcmp(HOME_STATUS, "STANDBY") != 0) {
-    endBtn.initButton(&tft, 160, 380, 280, 70, WHITE, BLUE, BLACK, "END", 3);
+    endBtn.initButton(&tft, 160, 410, 280, 70, WHITE, BLUE, BLACK, "END", 3);
     endBtn.drawButton(false);
   }
 
@@ -57,8 +64,8 @@ void ScanView(char* title) {
     SerScanBtn.drawButton(false);
   }
 
-  QrScanBtn.initButton(&tft, 160, 410, 280, 70, WHITE, BLUE, BLACK, "SCAN QR", 3);
-  QrScanBtn.drawButton(false);
+  // QrScanBtn.initButton(&tft, 160, 410, 280, 70, WHITE, BLUE, BLACK, "SCAN QR", 3);
+  // QrScanBtn.drawButton(false);
 
   CURRENT_VIEW = "SCAN";
 }
@@ -113,37 +120,96 @@ void RFIDView(char* title) {
   CURRENT_VIEW = "RFID";
 }
 
+
 void QrView(char* title) {
   tft.fillScreen(WHITE);
 
   Header(title);
 
-  Text(45, 120, 3, BLACK, "SILAHKAN SCAN");
-  Text(65, 160, 3, BLACK, "QR BERIKUT");
+  Text(45, 370, 3, BLACK, "SILAHKAN SCAN");
+  // Text(65, 160, 3, BLACK, "QR BERIKUT");
 
   uint8_t qrcodeData[qrcode_getBufferSize(QRcode_Version)];
 
-  qrcode_initText(&qrcode, qrcodeData, QRcode_Version, ECC_HIGH, "tes");
+  qrcode_initText(&qrcode, qrcodeData, QRcode_Version, ECC_HIGH, QR_VALUE);
 
   // Display QR Code on TFT
   uint8_t x0 = 115;
   uint8_t y0 = 220;
 
+  uint8_t qr_size = 5;
+  uint8_t qr_top = 100;
+  uint8_t qr_left = (320 / 2) - int((qrcode.size * qr_size) / 2);  // Center
+
+  // Each line of modules
   for (uint8_t y = 0; y < qrcode.size; y++) {
+    // Each horizontal module
     for (uint8_t x = 0; x < qrcode.size; x++) {
-      if (qrcode_getModule(&qrcode, x, y) == 0) {
-        tft.drawPixel(x0 + 2 * x,     y0 + 2 * y, TFT_WHITE);
-        // tft.drawPixel(x0 + 2 * x + 1, y0 + 2 * y, TFT_WHITE);
-        // tft.drawPixel(x0 + 2 * x,     y0 + 2 * y + 1, TFT_WHITE);
-        // tft.drawPixel(x0 + 2 * x + 1, y0 + 2 * y + 1, TFT_WHITE);
-      } else {
-        tft.drawPixel(x0 + 1 * x,     y0 + 1 * y, TFT_BLACK);
-        // tft.drawPixel(x0 + 2 * x + 1, y0 + 2 * y, TFT_BLACK);
-        // tft.drawPixel(x0 + 2 * x,     y0 + 2 * y + 1, TFT_BLACK);
-        // tft.drawPixel(x0 + 2 * x + 1, y0 + 2 * y + 1, TFT_BLACK);
+      if (qrcode_getModule(&qrcode, x, y)) {
+
+        tft.fillRect(qr_left + (qr_size * x), qr_top + (qr_size * y), qr_size, qr_size, BLACK);
       }
     }
   }
 
   CURRENT_VIEW = "QR";
+}
+
+// SELECT PART FOR INPUT NG VIEW
+void SelectPartView(char* title) {
+  tft.fillScreen(BLACK);
+
+  Header(title);
+
+  deserializeJson(docSlave1ForItems, listItems);
+  Serial.println(listItems);
+
+  if (!docSlave1ForItems.isNull()) {
+    JsonArray jsonArray = docSlave1ForItems.as<JsonArray>();
+    listItemsLength = jsonArray.size();
+    Serial.println(listItemsLength);
+
+    if (listItemsLength > 0) {
+      ItemButtons =  new Adafruit_GFX_Button[listItemsLength];
+
+      for (int i = 0; i < listItemsLength; i++) {
+        JsonVariant v = jsonArray[i];
+        int itemId = v["item_id"];
+        const char* itemCode = v["item_code"];
+        const char* itemName = v["item_name"];
+        int okQuantity = v["ok_quantity"];
+        int ngQuantity = v["ng_quantity"];
+
+        Text(10, 100 + i * 95, 2, WHITE, itemName);
+        ItemButtons[i].initButton(&tft, 160, 160 + i * 95, 280, 50, WHITE, WHITE, BLACK, const_cast<char*>(itemCode), 2);
+        ItemButtons[i].drawButton(false);
+
+        //CONVERT INT TO CONST CHAR
+        addElementToListItemsId(String(itemId).c_str());
+
+      }
+    }
+  }
+}
+
+//LIST NG ITEMS VIEW
+void NGView(char* title) {
+  tft.fillScreen(BLACK);
+
+  Header(title);
+  int yPos = 120;
+  int yPos2 = 120;
+  for (int i = 0; i < 5; i++) {
+    NgListBtn1[i].initButton(&tft, 85, yPos, 135, 65, colorButtonNgList1[i], colorButtonNgList1[i], BLACK, buttonNgList1[i], 2);
+    NgListBtn1[i].drawButton(false);
+    yPos = yPos + 70;
+  }
+
+  for (int i = 0; i < 5; i++) {
+    NgListBtn2[i].initButton(&tft, 235, yPos2, 135, 65, colorButtonNgList2[i], colorButtonNgList2[i], BLACK, buttonNgList2[i], 2);
+    NgListBtn2[i].drawButton(false);
+    yPos2 = yPos2 + 70;
+  }
+
+  CURRENT_VIEW = "NG";
 }

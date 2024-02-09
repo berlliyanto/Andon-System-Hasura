@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include <HardwareSerial.h>
 #include "qrcode.h"
+#include <vector>
 
 // --------------Define ----------------//
 
@@ -42,22 +43,19 @@ int XP = 7, YP = A2, XM = A1, YM = 6;  //next common configuration
 #endif
 // --------------Define End ----------------//
 
-// --------------Object Initialize ----------------//
-QRCode qrcode;
-DynamicJsonDocument docSlave1(100);
-HardwareSerial SerialMaster(2);
-MCUFRIEND_kbv tft;
-Adafruit_GFX_Button callBtn, scanBtn, endBtn, backBtn, MTCallBtn, MoldCallBtn,
-  TekCallBtn, MatCallBtn, QuaCallBtn, CHScanBtn, AddScanBtn, SerScanBtn, QrScanBtn, RunChangeBtn;
-TouchScreen ts(XP, YP, XM, YM, 300);  //re-initialised after diagnose
-// --------------Object Initialize END ----------------//
-
 // --------------Declare Variable ----------------//
+std::vector<String> listNgIds;
+std::vector<String> listItemId;
+
 int pX, pY;
+int listItemsLength = 0;
+
+// VARIABEL TO KEEP STACK OF ROUTE OF PAGES
 char* CURRENT_VIEW = "HOME";
 char* LAST_VIEW = "HOME";
 char* LAST_VIEW2 = "";
 char* LAST_VIEW3 = "";
+
 char* RFID_STATUS = "";
 const char* HOME_STATUS = "STANDBY";
 bool isChangedView = false;
@@ -65,16 +63,51 @@ bool readyToChangeView = true;
 int callCount = 0;
 int manPower = 0;
 bool isLoading = false;
+bool connectionStatus = false;
 
-char* buttonTypeLabels[] = { "MAINTENANCE", "MOLD", "TEKNISI", "MATERIAL", "QUALITY" };
+String listItems = "";
+String itemId = "";
+
+char* valueNg1Ids[] = { "181", "177", "173", "179", "184" };
+char* valueNg2Ids[] = { "178", "187", "189", "191", "175" };
+char* keyNg1[] = { "black_dot", "silver", "shortshot", "running_in", "color" };
+char* keyNg2[] = { "weld_line", "crack", "mold", "problem", "sink_mark" };
+char* buttonNgList1[] = { "Black Dot", "Silver", "Shortshot", "RunningIn", "Color" };
+char* buttonNgList2[] = { "Weld Line", "Crack", "Pin Mark", "Under Out", "Sink Mark" };
+uint16_t colorButtonNgList1[] = { WHITE, WHITE, WHITE, WHITE, WHITE };
+uint16_t colorButtonNgList2[] = { WHITE, WHITE, WHITE, WHITE, WHITE };
+bool isButtonNgList1Pressed[] = { false, false, false, false, false };
+bool isButtonNgList2Pressed[] = { false, false, false, false, false };
+
+char* buttonNgListState[] = {};
+char* buttonNgList2State[] = {};
+
+String currentType = "";
+const char* workOrderNo = "";
+
 const int TS_LEFT = 907, TS_RT = 136, TS_TOP = 942, TS_BOT = 139;
+
+// --------------Object Initialize ----------------//
+QRCode qrcode;
+DynamicJsonDocument docSlave1(4096);
+DynamicJsonDocument docSlave1ForNG(512);
+DynamicJsonDocument docSlave1ForItems(2048);
+HardwareSerial SerialMaster(2);
+MCUFRIEND_kbv tft;
+Adafruit_GFX_Button callBtn, scanBtn, endBtn, backBtn, MTCallBtn, MoldCallBtn,
+  TekCallBtn, MatCallBtn, QuaCallBtn, CHScanBtn, AddScanBtn, SerScanBtn, QrScanBtn,
+   RunChangeBtn, NgBtn, submitBtn, NgListBtn1[5], NgListBtn2[5];
+Adafruit_GFX_Button* ItemButtons;
+TouchScreen ts(XP, YP, XM, YM, 300);  //re-initialised after diagnose
+// --------------Object Initialize END ----------------//
 
 //Millis
 unsigned long loadingMillis = 0;
 unsigned long loadingIntervalMillis = 50;
 
-const int QRcode_Version = 14;  // set the version (range 1->40)
-const int QRcode_ECC = 0;       // set the Error Correction level (range 0-3) or symbolic (ECC_LOW, ECC_MEDIUM, ECC_QUARTILE and ECC_HIGH)
+const int QRcode_Version = 8;  // set the version (range 1->40)
+const int QRcode_ECC = 0;      // set the Error Correction level (range 0-3) or symbolic (ECC_LOW, ECC_MEDIUM, ECC_QUARTILE and ECC_HIGH)
+const char* QR_VALUE = "";
 // --------------Declare Variable END ----------------//
 
 void setup() {
@@ -92,9 +125,10 @@ void setup() {
 }
 
 void loop() {
-  routes();
-  touchOperation();
-  // shotCount();
-  mainConSerial();
-  LoadingCircle();
+  routes();          // LISTEN CURRENT ROUTES
+  touchOperation();  // TFT TOUCH OPERATION
+  // shotCount(); // LISTEN INPUT FROM PIN IF HIGH SEND THE SHOT TO MASTER
+  mainConSerial();  // MAIN SERIAL COMMUNICATION FROM MASTER
+  LoadingCircle();  // LOADING ANIMATION
+  // indicator(); // CONNECTION STATUS ON TOP RIGHT TFT
 }
