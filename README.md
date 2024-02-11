@@ -4,11 +4,11 @@ An improvisation of the previous Andon version utilizing a master and slave comm
 
 ## A. Introduction
 
-#### Master
+### Master
 
 The Master serves as the brain or bridging connection between Slave 1 and Slave 2. The Master also handles requests and responses from the server. It receives input from RFID and utilizes an Ethernet module to establish an internet connection.
 
-#### Slave
+### Slave
 
 The Slave functions as a controller that receives input from sensors and actuators. Slave 1 receives input from TFT, Proximity, and relay sensors, and displays output on TFT. Meanwhile, Slave 2 provides output on the RGB DMD Panel to display status and calls.
 
