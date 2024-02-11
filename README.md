@@ -139,7 +139,7 @@ char* body = strstr(bodyStart, "{\"data\":{\"work_center_id\":");
 
 ```
 
-- Pada slave 1 gunakan library qrcode dan TouchScreen_kbv pada folder yang sama dengan file program untuk menghindari tabrakan dengan library global arduino
+- Pada slave 1 gunakan library qrcode dan TouchScreen_kbv pada folder yang sama dengan file program untuk menghindari tabrakan dengan library global arduino.
 
 ### 2. Wiring
 
