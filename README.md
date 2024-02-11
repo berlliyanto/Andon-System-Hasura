@@ -41,3 +41,20 @@ Pada arsitektur sistem diatas terdapat 1 Master unit dan 2 buah slave. Master da
 - Download [ESP32 Board Manager](https://github.com/iotechbugs/esp32-arduino) atau bisa download melalui board manager.
 - Komponen yang sudah disebutkan sebelumnya.
 - Download library yang dibutuhkan.
+
+## E. Library
+- ArduinoJson
+- SPI
+- EthernetENC
+- MFRC522
+- Adafruit_GFX
+- MCUFRIEND_kbv
+- TouchScreen
+- qrcode
+- ESP32-HUB75-MatrixPanel-I2S-DMA
+
+## F. Catatan Penting
+
+### 1. Program / Sintaks
+- Dalam komunikasi serial pada JSOn selalu sertakan key "state" dan "type" sebagai identitas dari operasi yang akan dilakukan
+- 
