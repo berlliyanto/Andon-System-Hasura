@@ -126,7 +126,7 @@ In the above system architecture, there is 1 Master unit and 2 slaves. The Maste
 
 ## G. Important Notes
 
-### 1. Program / Sintaks
+### 1. Program
 
 - In serial communication with JSON, always include the "state" and "type" keys as identifiers for the operation to be performed.
 - Note the first key received from the response body; ensure that the response from the server has the same structure as the data processing by the master.
