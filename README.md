@@ -11,11 +11,11 @@ Slave berfungsi sebagai kontroller yang menerima input dari sensor dan aktuator.
 ## B. Daftar Komponen
 
 ### 1. Master (ESP)
-    a. ESP 32
-    b. RFID
-    c. Ethernet ENC28J60
-    d. Step Down 5V DC to 3.3 V DC
-    e. Push Button
+    - ESP 32
+    - RFID
+    - Ethernet ENC28J60
+    - Step Down 5V DC to 3.3 V DC
+    - Push Button
 
 ### 2. Slave 1 (ESP)
     - ESP 32
@@ -30,4 +30,7 @@ Slave berfungsi sebagai kontroller yang menerima input dari sensor dan aktuator.
 
 ## C. Arsitektur Sistem
 
+Berikut merupakan arsitektur sistem yang telah dibuat.
 ![system](/images/system_architecture.PNG)
+
+Pada arsitektur sistem diatas terdapat 1 Master unit dan 2 buah slave. Master dan slave akan melakukan komunikasi secara serial melalui pin Rx dan Tx pada masing - masing alat. Data yang dikirim melalui serial adalah berbentuk JSON, sebagai contoh saat pengguna melakukan aksi panggilan terhadap orang maintenance maka slave 1 akan mengirim JSON {"state": "call", "type": "Maintenance"} ke master. Lalu master akan meyimpan dulu data JSON yang diterima dari slave 1 dan akan mengirimkan kembali ke kedua slave jika master berhasil menerima response 200 dari server. Selanjutnya karena kedua slave sudah menerima kembali data JSON dari master maka akan dilakukan pembaharuan state atau tampilan pada setiap slave.
