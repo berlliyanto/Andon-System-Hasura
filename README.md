@@ -11,11 +11,11 @@ Slave berfungsi sebagai kontroller yang menerima input dari sensor dan aktuator.
 ## B. Daftar Komponen
 
 ### 1. Master (ESP)
-    - ESP 32
-    - RFID
-    - Ethernet ENC28J60
-    - Step Down 5V DC to 3.3 V DC
-    - Push Button
+    a. ESP 32
+    b. RFID
+    c. Ethernet ENC28J60
+    d. Step Down 5V DC to 3.3 V DC
+    e. Push Button
 
 ### 2. Slave 1 (ESP)
     - ESP 32
