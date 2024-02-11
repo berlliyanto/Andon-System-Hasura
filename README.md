@@ -12,7 +12,7 @@ The Master serves as the brain or bridging connection between Slave 1 and Slave 
 
 The Slave functions as a controller that receives input from sensors and actuators. Slave 1 receives input from TFT, Proximity, and relay sensors, and displays output on TFT. Meanwhile, Slave 2 provides output on the RGB DMD Panel to display status and calls.
 
-## B. Daftar Komponen
+## B. Components List
 
 ### 1. Master (ESP)
     - ESP32
@@ -124,7 +124,7 @@ In the above system architecture, there is 1 Master unit and 2 slaves. The Maste
     - utils.ino
         Helper functions to process data.
 
-## G. Catatan Penting
+## G. Important Notes
 
 ### 1. Program / Sintaks
 
