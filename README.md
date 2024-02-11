@@ -57,4 +57,5 @@ Pada arsitektur sistem diatas terdapat 1 Master unit dan 2 buah slave. Master da
 
 ### 1. Program / Sintaks
 - Dalam komunikasi serial pada JSOn selalu sertakan key "state" dan "type" sebagai identitas dari operasi yang akan dilakukan
-- 
+- Perhatikan key pertama yang diterima dari reponse body
+    char* body = strstr(bodyStart, "{\"data\":{\"work_center_id\":");
