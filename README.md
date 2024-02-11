@@ -1,14 +1,14 @@
 # Modular Andon System
 Improvisasi dari versi andon sebelumnya menggunakan sistem komunikasi master dan slave.
 
-### Peran
+## A. Peran
 #### Master
 Master berfungsi sebagai otak atau jembatan penghubung antara slave 1 dan slave 2, master juga yang menangani dalam request dan response dari server. Master menerima input dari RFID dan menggunakan module Ethernet supaya memiliki koneksi internet.
 
 #### Slave
 Slave berfungsi sebagai kontroller yang menerima input dari sensor dan aktuator. Slave 1 menerima input dari TFT, Proximity, dan relay, serta menampilkan output pada TFT. Sedangkan Slave 2 memberi output pada Panel DMD RGB untuk menampilkan status dan calling.
 
-### Daftar Komponen
+## B. Daftar Komponen
 
 #### 1. Master (ESP)
     - ESP 32
@@ -28,6 +28,6 @@ Slave berfungsi sebagai kontroller yang menerima input dari sensor dan aktuator.
     - ESP 32
     - Panel DMD RGB (HUB 75)
 
-### Arsitektur Sistem
+## C. Arsitektur Sistem
 
 ![system](/images/system_architecture.PNG)
