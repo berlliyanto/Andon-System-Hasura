@@ -76,6 +76,8 @@ Pada arsitektur sistem diatas terdapat 1 Master unit dan 2 buah slave. Master da
 - qrcode
 - ESP32-HUB75-MatrixPanel-I2S-DMA
 
+**Library dapat di download melalui library manager Arduino IDE**
+
 ## F. Folder dan File
 
 #### 1. main (Master)
@@ -113,7 +115,14 @@ Pada arsitektur sistem diatas terdapat 1 Master unit dan 2 buah slave. Master da
 #### 3. slave2 (Slave 2)
     - slave_2.ino
         Program utama meliputi import library, global variabel, setup dan loop
-    -
+    - serial.ino
+        Komunikasi serial antara slave 2 dan master
+    - json.ino
+        Pengolahan data JSON yang diterima
+    - p10.ino
+        Menampilkan running text pada P10
+    - utils.ino
+        Fungsi - fungsi bantuan untuk mengolah data
 
 ## G. Catatan Penting
 
@@ -130,4 +139,9 @@ char* body = strstr(bodyStart, "{\"data\":{\"work_center_id\":");
 
 ```
 
--
+- Pada slave 1 gunakan library qrcode dan TouchScreen_kbv pada folder yang sama dengan file program untuk menghindari tabrakan dengan library global arduino
+
+### 2. Wiring
+
+- Perhatikan tegangan input di module Ethernet pastikan tegangan selalu stabil kisaran 3.0V - 3.3V, jika lebih atau kurang akan menyebabkan ethernet mati atau hilang koneksi
+- Karena banyak menggunakan Pin perhatikan jangan sampai ada pin yang tertukar.
