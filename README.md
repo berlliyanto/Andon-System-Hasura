@@ -1,16 +1,16 @@
 # Modular Andon System
 
-Improvisasi dari versi andon sebelumnya menggunakan sistem komunikasi master dan slave.
+An improvisation of the previous Andon version utilizing a master and slave communication system.
 
-## A. Pendahuluan
+## A. Introduction
 
 #### Master
 
-Master berfungsi sebagai otak atau jembatan penghubung antara slave 1 dan slave 2, master juga yang menangani dalam request dan response dari server. Master menerima input dari RFID dan menggunakan module Ethernet supaya memiliki koneksi internet.
+The Master serves as the brain or bridging connection between Slave 1 and Slave 2. The Master also handles requests and responses from the server. It receives input from RFID and utilizes an Ethernet module to establish an internet connection.
 
 #### Slave
 
-Slave berfungsi sebagai kontroller yang menerima input dari sensor dan aktuator. Slave 1 menerima input dari TFT, Proximity, dan relay, serta menampilkan output pada TFT. Sedangkan Slave 2 memberi output pada Panel DMD RGB untuk menampilkan status dan calling.
+The Slave functions as a controller that receives input from sensors and actuators. Slave 1 receives input from TFT, Proximity, and relay sensors, and displays output on TFT. Meanwhile, Slave 2 provides output on the RGB DMD Panel to display status and calls.
 
 ## B. Daftar Komponen
 
@@ -32,39 +32,39 @@ Slave berfungsi sebagai kontroller yang menerima input dari sensor dan aktuator.
     - ESP32
     - Panel DMD RGB (HUB 75)
 
-## C. Arsitektur Sistem
+## C. System Architecture
 
-Berikut merupakan arsitektur sistem yang telah dibuat.
+The following is the system architecture that has been created.
 
 ![system](/images/system_architecture.PNG)
 
-Pada arsitektur sistem diatas terdapat 1 Master unit dan 2 buah slave. Master dan slave akan melakukan komunikasi secara serial melalui pin Rx dan Tx pada masing - masing alat. Data yang dikirim melalui serial adalah berbentuk JSON, sebagai contoh saat pengguna melakukan aksi panggilan terhadap orang maintenance maka slave 1 akan mengirim JSON {"state": "call", "type": "Maintenance"} ke master. Lalu master akan meyimpan dulu data JSON yang diterima dari slave 1 dan akan mengirimkan kembali ke kedua slave jika master berhasil menerima response 200 dari server. Selanjutnya karena kedua slave sudah menerima kembali data JSON dari master maka akan dilakukan pembaharuan state atau tampilan pada setiap slave. Kondisi tadi berlaku hanya untuk operasi call, serve, end dan add mp, khusus untuk operasi change yaitu perubahan status maka JSON yang sebelumnya disimpan akan ditimpa oleh JSON yang berasal dari server.
+In the above system architecture, there is 1 Master unit and 2 slaves. The Master and slaves communicate serially through Rx and Tx pins on each device. The data transmitted via serial is in JSON format. For example, when a user initiates a call action to the maintenance person, Slave 1 will send JSON {"state": "call", "type": "Maintenance"} to the Master. The Master then saves the received JSON data from Slave 1 and will resend it to both slaves if it successfully receives a 200 response from the server. Subsequently, because both slaves have received the JSON data from the Master, state updates or displays are performed on each slave. This condition applies only to call, serve, end, and add mp operations. For the change operation, which is a status change, the previously saved JSON will be overwritten by the JSON originating from the server.
 
-### 1. Wiring Diagram Master
+### 1. Master Wiring Diagram
 
 ![system](/images/wiring_master.png)
 
-### 2. Wiring Diagram Slave 1
+### 2. Slave 1 Wiring Diagram
 
 ![system](/images/wiring_slave1.png)
 
-### 3. Wiring Diagram Slave 2
+### 3. Slave 2 Wiring Diagram
 
 ![system](/images/wiring_slave2.png)
 
-### 4. Wiring Diagram Power
+### 4. Power Wiring Diagram
 
 ![sytem](/images/wiring_power.png)
 
-## D. Persyaratan
+## D. Requirements
 
 - Download [Arduino IDE](https://www.arduino.cc/en/software).
-- Download [ESP32 Board Manager](https://github.com/iotechbugs/esp32-arduino) atau bisa download melalui board manager.
-- Download [QElectro Tech](https://qelectrotech.org/download.php) untuk membuat wiring diagram.
-- Komponen yang sudah disebutkan sebelumnya.
-- Download library yang dibutuhkan.
+- Download [ESP32 Board Manager](https://github.com/iotechbugs/esp32-arduino) or download it through the board manager.
+- Download [QElectro Tech](https://qelectrotech.org/download.php) for creating wiring diagrams.
+- Components as previously mentioned.
+- Download required libraries.
 
-## E. Library
+## E. Libraries
 
 - ArduinoJson
 - SPI
@@ -76,60 +76,60 @@ Pada arsitektur sistem diatas terdapat 1 Master unit dan 2 buah slave. Master da
 - qrcode
 - ESP32-HUB75-MatrixPanel-I2S-DMA
 
-**Library dapat di download melalui library manager Arduino IDE**
+**Libraries can be downloaded through the Arduino IDE library manager.**
 
-## F. Folder dan File
+## F. Folder and File
 
 #### 1. main (Master)
     - main.ino
-        Program utama meliputi import library, global variabel, setup dan loop
+        Main program including library imports, global variables, setup, and loop.
     - ethernet_config.ino
-        pengaturan ethernet
+        Ethernet configuration.
     - api_call.ino
-        fungsi untuk melakukan request dan menerima response dari server
+        Functions to make requests and receive responses from the server.
     - rfid.ino
-        fungsi untuk melakukan pembacaan rfid dan operasi rfid lainnya
+        Functions for RFID reading and other RFID operations.
     - slave1.ino
-        komunikasi serial antara master dan slave 1
+        Serial communication between Master and Slave 1.
     - slave2.ino
-        komunikasi serial antara master dan slave 2
+        Serial communication between Master and Slave 2.
 
 #### 2. slave1 (Slave 1)
     - slave1.ino
-        Program utama meliputi import library, global variabel, setup dan loop
+        Main program including library imports, global variables, setup, and loop.
     - serial.ino
-        Komunkasi serial antara slave 1 dan master
+        Serial communication between Slave 1 and Master.
     - json.ino
-        Pengolahan data JSON yang diterima dan mengirim JSON ke master
+        Processing received JSON data and sending JSON to Master.
     - view.ino
-        Program tampilan halaman pada TFT
+        Page display program on TFT.
     - component.ino
-        Komponen - komponen yang digunakan pada view
+        Components used in the view.
     - touch.ino
-        Program untuk menerima inputan dari user berupa sentuhan pada layar tft untuk melakukan aksi
+        Program to receive user input through touch on the TFT screen to perform actions.
     - shot_count.ino
-        Shot count produk
+        Product shot count.
     - utils.ino
-        Fungsi - fungsi bantuan untuk mengolah data
+        Helper functions to process data.
 
 #### 3. slave2 (Slave 2)
     - slave_2.ino
-        Program utama meliputi import library, global variabel, setup dan loop
+        Main program including library imports, global variables, setup, and loop.
     - serial.ino
-        Komunikasi serial antara slave 2 dan master
+        Serial communication between Slave 2 and Master.
     - json.ino
-        Pengolahan data JSON yang diterima
+        Processing received JSON data.
     - p10.ino
-        Menampilkan running text pada P10
+        Displaying running text on P10.
     - utils.ino
-        Fungsi - fungsi bantuan untuk mengolah data
+        Helper functions to process data.
 
 ## G. Catatan Penting
 
 ### 1. Program / Sintaks
 
-- Dalam komunikasi serial pada JSON selalu sertakan key "state" dan "type" sebagai identitas dari operasi yang akan dilakukan
-- Perhatikan key pertama yang diterima dari reponse body, pastikan response dari server memiliki struktur yang sama dengan pengolahan data oleh master.
+- In serial communication with JSON, always include the "state" and "type" keys as identifiers for the operation to be performed.
+- Note the first key received from the response body; ensure that the response from the server has the same structure as the data processing by the master.
 
 ```c++
 
@@ -139,9 +139,9 @@ char* body = strstr(bodyStart, "{\"data\":{\"work_center_id\":");
 
 ```
 
-- Pada slave 1 gunakan library qrcode dan TouchScreen_kbv pada folder yang sama dengan file program untuk menghindari tabrakan dengan library global arduino.
+- On Slave 1, use the qrcode and TouchScreen_kbv libraries in the same folder as the program file to avoid collisions with global Arduino libraries.
 
 ### 2. Wiring
 
-- Perhatikan tegangan input di module Ethernet pastikan tegangan selalu stabil kisaran 3.0V - 3.3V, jika lebih atau kurang akan menyebabkan ethernet mati atau hilang koneksi
-- Karena banyak menggunakan Pin perhatikan jangan sampai ada pin yang tertukar.
+- Pay attention to the input voltage on the Ethernet module; ensure that the voltage is always stable in the range of 3.0V - 3.3V. If it exceeds or falls below, it will cause the Ethernet to shut down or lose connection.
+- Due to the use of many pins, ensure that there are no pins that are mistakenly connected.
